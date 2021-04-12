@@ -1,37 +1,76 @@
-import {useState} from 'react'
+import {useState ,useEffect} from 'react'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
  import Header from './Components/Header'
  import Tasks from './Components/Tasks'
+ import AddTask from './Components/AddTask'
+import Footer from './Components/Footer'
+import About from './Components/About'
+ 
  function App(){
-  const [tasks,setState] = useState( [
-    {
-         id:1,
-         text:"Hello world",
-         date:"4-10-2021",
-         reminder:true
-    },
-    {
-        id:2,
-        text:"Fract is going viral",
-        date:"4-11-2021",
-        reminder:true
-    },
-    {
-        id:3,
-        text:"Going to MIU",
-        date:"4-12-2021",
-        reminder:false
-    }
-])
-const deleteTask= (id)=>{
+const [tasks,setState] = useState([])
+
+useEffect(()=>{
+const getTask = async()=>{
+    const taskFormServer = await fetchTask()
+     
+   setState(taskFormServer)
+   
+}
+
+ getTask() 
+
+},[])
+const fetchTask = async()=>{
+    const res = await fetch('http://localhost:5000/tasks')
+    const data = await res.json()
+    console.log(data)
+    return data
+    
+}
+
+const [showForm,setShowForm]= useState(false)
+const addTask= async (task)=>{
+const res = await fetch('http://localhost:5000/tasks',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(task)})
+const data = await res.json()
+
+setState([...tasks,data])
+// const id = Math.floor(Math.random*1000)+1
+// const newTask = {id,...task}
+// setState([...tasks,newTask])
+
+}
+const deleteTask= async (id)=>{
+  await fetch(`http://localhost:5000/tasks/${id}`,{method:'DELETE'})
  setState(tasks.filter((task)=>task.id!==id))
 }
-const onToggleReminder = (id)=>{
-setState(tasks.map((task)=>(task.id==id?{...task,reminder:!task.reminder}:task)))
+
+const onToggleReminder = async(id)=>{
+  const taskToggled = await fetch(id)
+  const update = {...taskToggled,reminder:!taskToggled.reminder}
+  const res = await fetch(`http://localhost:5000/tasks/${id}`,{
+    method:'PUT',
+    headers:{
+     'Content-type':'appliction/json' 
+    },
+    body:JSON.stringify(update)
+  })
+  
+  const data = await res.json()
+
+
+setState(tasks.map((task)=>(task.id===id?{...task,reminder:!data.reminder}:task)))
 }
-   return (<div className="container">
-   <Header title = "Task Tracker" />
+   return (
+   <Router>
+   <div className="container">
+
+   <Header  onShow ={()=>setShowForm(!showForm)} showAdd={showForm} title = "Task Tracker" />
+  {showForm && <  AddTask onAddTask={addTask} />}
   { tasks.length>0?<Tasks tasks ={tasks} onDelete ={deleteTask} onToggleReminder ={onToggleReminder}/>:'NO Tasks to show'}
+  <Route Path='/about' component={About} />
+  <Footer/>
    </div>
+   </Router>
  )
  }
 export default App;

@@ -1,0 +1,22 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "text": "Hello world",
+      "date": "4-10-2021",
+      "reminder": true
+    },
+    {
+      "id": 2,
+      "text": "Fract is going viral",
+      "date": "4-11-2021",
+      "reminder": true
+    },
+    {
+      "text": "hrk",
+      "date": "bkjb ",
+      "reminder": "false",
+      "id": 3
+    }
+  ]
+}

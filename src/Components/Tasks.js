@@ -5,7 +5,7 @@ const Tasks = ({tasks,onDelete,onToggleReminder}) => {
     
     return (
         <div>
-           {tasks.map((tasks)=>(<Task key={tasks.id}  task={tasks} onDelete={onDelete} onToggleReminder={onToggleReminder}/>))} 
+           {tasks.map((tasks,index)=>(<Task key={index}  task={tasks} onDelete={onDelete} onToggleReminder={onToggleReminder}/>))} 
         </div>
     )
 }
